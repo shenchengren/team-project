@@ -13,9 +13,8 @@
       <input type="text" placeholder="输入验证码">
       <span>11323</span>
     </div> -->
-    <p class="error" v-if="active">用户名或者密码错误</p>
-    <button @click="loginPage">登录</button>
-    <router-link class="goRegister" to="register">还没有用户名？去注册？</router-link>
+    <p class="error" v-if="active">{{msg}}</p>
+    <button @click="loginPage">注册</button>
   </div>
 </template>
 <script>
@@ -25,7 +24,8 @@ export default {
       return {
         userName:'',
         password:'',
-        active: false
+        active: false,
+        msg:'密码设置超过限制'
       }
     },
     mounted(){
@@ -43,23 +43,24 @@ export default {
           params.userName= this.userName;
           params.password = this.password;
           
+          
          if(!reg.test(params.password)){
            this.active = true;
           return
         };
         
           //发送请求
-          axios.post('http://39.106.54.6:8081/api/login',params).then(function(res){
-            if(res.data.status == 1){
+          axios.post('http://39.106.54.6:8081/api/register',params).then(function(res){
 
-              this.$routes.push('/goods')
-              that.active = false;
-            }else {
-               that.active = true;
-            }
-      })
+              if(res.data.status){
+                    that.active = true;
+                    that.msg = res.data.msg;
+              }
 
-      }
+                if(res.data.status == 1) this.$route.push('/goods')
+            
+            })
+      },
     }
 }
 </script>
@@ -138,3 +139,4 @@ export default {
     }
   }
 </style>
+
